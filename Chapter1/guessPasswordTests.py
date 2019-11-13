@@ -1,5 +1,8 @@
+import sys
+sys.path.append("..")
+
 import datetime
-import genetic
+import Library.genetic as genetic
 import unittest
 import random
 
@@ -8,7 +11,12 @@ def get_fitness(guess,target):
 
 def display(candidate,startTime):
     timeDiff=datetime.datetime.now()- startTime
-    print("{0}\t{1}\t{2}".format(candidate.Genes,candidate.Fitness,str(timeDiff)))
+    print("{0}\t{1}\t{2}".format(
+        ''.join(candidate.Genes),
+        candidate.Fitness,
+        str(timeDiff)
+        )
+    )
 
 class GuessPasswordTests(unittest.TestCase):
 
@@ -42,7 +50,7 @@ class GuessPasswordTests(unittest.TestCase):
         optimalFitness=len(target)
         best=genetic.get_best(fnGetFitness,len(target),optimalFitness,self.geneset,fnDisplay)
 
-        self.assertEqual(best.Genes,target)
+        self.assertEqual(''.join(best.Genes),target)
         
 if __name__=='__main__':
     unittest.main()
