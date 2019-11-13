@@ -22,23 +22,30 @@ def _mutate(parent,geneSet,get_fitness):
 def get_best(get_fitness, targetLen, optimalFitness, geneSet, display):
     random.seed()
     
-    bestParent=_generate_parent(targetLen,geneSet,get_fitness)
-    display(bestParent)
+    def fnMutate(parent):
+        return _mutate(parent,geneSet,get_fitness)
+    
+    def fnGenerateParent():
+        return _generate_parent(targetLen,geneSet,get_fitness)
 
-    if(bestParent.Fitness >= optimalFitness):
-            return bestParent
+    for improvement in _get_imporvement(fnMutate,fnGenerateParent):
+        display(improvement)
 
+        if not optimalFitness > improvement.Fitness:
+            return improvement
+    
+def _get_imporvement(new_child,generate_parent):
+    bestParent=generate_parent()
+    yield bestParent
+    
     while True:
-        child=_mutate(bestParent,geneSet,get_fitness)
-        
-        if(bestParent.Fitness>=child.Fitness):
-            continue;
-        
-        display(child)
-        
-        if(child.Fitness >= optimalFitness):
-            return child
-        
+        child=new_child(bestParent)
+        if(bestParent.Fitness > child.Fitness):
+            continue
+        if (not child.Fitness > bestParent.Fitness):
+            bestParent=child
+            continue
+        yield child
         bestParent=child
 
 class Chromosome:
