@@ -4,15 +4,15 @@ import Library.genetic as genetic;
 import math,random,datetime,unittest;
 
 def get_fitness(genes,target):
-    return sum( 
-        1 for expected, actual in zip(target,''.join(genes)) if expected == actual 
-    );
+    sum=0;
+    for i in range(0,len(target) ):
+        if(str(genes[i]) == target[i]):
+            sum+=1;
+    return sum;
 
 def display(candidate,startTime):
     timeDiff=datetime.datetime.now() - startTime;
-    print(
-        "{0}\t{1}\t{2}".format( ''.join(candidate.Genes),candidate.Fitness,str(timeDiff) )
-    );
+    print("{0}\t{1}\t{2}".format( ''.join( str(i) for i in candidate.Genes),str(candidate.Fitness),str(timeDiff) ) );
 
 class OneMaxTests(unittest.TestCase):
     
@@ -43,8 +43,11 @@ class OneMaxTests(unittest.TestCase):
             fnDisplay
         );
 
-        self.assertEqual(''.join(best.Genes),target);
+        self.assertEqual(''.join(str(i) for i in best.Genes),target);
         print("  ");
+
+    def test_benchmark(self):
+        genetic.Benchmark.run(lambda: self.test(4000) );
 
 if __name__ == '__main__':
     unittest.main();
