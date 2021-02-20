@@ -30,25 +30,37 @@ def _mutate(parent,geneSet,get_fitness):
 
 def get_best(get_fitness,targetLen,optimalFitness,geneSet,display):
     random.seed();
+    def fnGenerateParent():
+        return _generate_parent( targetLen,geneSet,get_fitness );
+
+    def fnMutate(bestParent):
+        return _mutate(bestParent,geneSet,get_fitness);
+
+    # The Big Loop Of Evolution
+    for improvement in _get_improvement(fnMutate,fnGenerateParent):
+        
+        display(improvement);
+        
+        if not optimalFitness > improvement.Fitness:
+            return improvement;
+
+def _get_improvement(new_child,generate_parent):
     # Generate First chromosome
-    bestParent=_generate_parent( targetLen,geneSet,get_fitness );
-
-    display(bestParent);
-
-    if bestParent.Fitness >= optimalFitness:
-        return bestParent;
-
+    bestParent=generate_parent();
+    yield bestParent;
     while True:
-        child=_mutate(bestParent,geneSet,get_fitness);
-
-        if (bestParent.Fitness >= child.Fitness):
+        child= new_child(bestParent);
+        # This block is to keep child even if it equals to parent in fitness
+        # block begin
+        if ( bestParent.Fitness > child.Fitness ):
             continue;
-        
-        display(child);
-        if (child.Fitness >= optimalFitness):
-            return child;
-        
+
+        if (not child.Fitness > bestParent.Fitness):
+            bestParent= child;
+            continue;
+        yield child;
         bestParent=child;
+        # block ends
 
 # Benchmark Class
 class Benchmark:
